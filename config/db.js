@@ -18,7 +18,7 @@ async function connectToDatabase() {
       date DATE DEFAULT CURRENT_DATE NOT NULL,
       time TIME DEFAULT CURRENT_TIME NOT NULL,
       completed boolean DEFAULT false NOT NULL,
-      user_id bigint REFERENCES users(id),
+      user_id bigint REFERENCES users(id) ON DELETE CASCADE, 
       comment text,
       priority text DEFAULT 'low' NOT NULL
     )`

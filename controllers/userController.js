@@ -5,7 +5,6 @@ const { promisify } = require("util");
 
 const createSendToken = (data, statusCode, res) => {
   const id = data.rows[0].id;
-  console.log(data.rows[0]);
   const token = jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
@@ -17,118 +16,163 @@ const createSendToken = (data, statusCode, res) => {
 };
 
 exports.regitserUser = async (req, res) => {
-  const data = await client.query(
-    `SELECT * FROM users WHERE email='${req.body.email}'`
-  );
-  if (data.rows[0]) {
-    return res.status(400).json({
+  try {
+    const data = await client.query(
+      `SELECT * FROM users WHERE email='${req.body.email}'`
+    );
+    if (data.rows[0]) {
+      return res.status(400).json({
+        status: "fail",
+        message: "User already exists",
+      });
+    }
+
+    const salt = await bcrypt.genSalt(12);
+    const hash = await bcrypt.hash(req.body.password, salt);
+    const text = `INSERT INTO users(name,email,password) Values ('${req.body.name}','${req.body.email}','${hash}') RETURNING name, email, id ;`;
+    const result = await client.query(text);
+    createSendToken(result, 200, res);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       status: "fail",
-      message: "User already exists",
+      message: "An error occurred while registering the user",
     });
   }
-  const salt = await bcrypt.genSalt(12);
-  const hash = await bcrypt.hash(req.body.password, salt);
-  const text = `INSERT INTO users(name,email,password) Values ('${req.body.name}','${req.body.email}','${hash}') RETURNING name, email, id ;`;
-  const result = await client.query(text);
-  createSendToken(result, 200, res);
 };
 
 exports.login = async (req, res) => {
-  const text = `SELECT * FROM users WHERE email='${req.body.email}'`;
-  const result = await client.query(text);
+  try {
+    const text = `SELECT * FROM users WHERE email='${req.body.email}'`;
+    const result = await client.query(text);
 
-  if (
-    !result.rows[0] ||
-    !(await bcrypt.compare(req.body.password, result.rows[0].password))
-  ) {
-    return res.status(400).json({
+    if (
+      !result.rows[0] ||
+      !(await bcrypt.compare(req.body.password, result.rows[0].password))
+    ) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid email or password",
+      });
+    } else {
+      createSendToken(result, 200, res);
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       status: "fail",
-      message: "Invalid email or password",
+      message: "An error occurred while logging in",
     });
-  } else {
-    createSendToken(result, 200, res);
   }
 };
 
 exports.protect = async (req, res, next) => {
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer")
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  }
-  if (!token) {
-    return res.status(401).json({
+  try {
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+    if (!token) {
+      return res.status(401).json({
+        status: "fail",
+        message: "You're not logged in! Please log in to get access",
+      });
+    }
+
+    const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    const text = `SELECT * FROM users WHERE id=${decoded.id}`;
+    const result = await client.query(text);
+
+    if (!result.rows[0]) {
+      return res.json({
+        status: "fail",
+        message: "The user belonging to this token does no longer exist",
+      });
+    }
+    req.user = result.rows[0];
+    next();
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       status: "fail",
-      message: "You're not logged in! Please log in to get access",
+      message: "An error occurred while verifying token",
     });
   }
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-
-  const text = `SELECT * FROM users WHERE id=${decoded.id}`;
-
-  const result = await client.query(text);
-
-  if (!result.rows[0]) {
-    return res.json({
-      status: "fail",
-      message: "The user belonging to this token does no longer exist",
-    });
-  }
-  req.user = result.rows[0];
-  next();
 };
+
 exports.updateUser = async (req, res) => {
-  if (req.user.id !== req.params.id) {
-    return res.status(401).json({
+  try {
+    const text = `
+      UPDATE users 
+      SET name = COALESCE($1, name), 
+          email = COALESCE($2, email)
+      WHERE id = $3
+      RETURNING name,email,id;
+    `;
+
+    const values = [req.body.name || null, req.body.email || null, req.user.id];
+
+    const result = await client.query(text, values);
+    return res.status(200).json({
+      status: "success",
+      data: result.rows,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       status: "fail",
-      message: "You're not allowed to update this user",
+      message: "An error occurred while updating user",
     });
   }
-  const text = `
-    UPDATE users 
-    SET name = COALESCE($1, name), 
-        email = COALESCE($2, email)
-    WHERE id = $3
-    RETURNING name,email,id;
-  `;
-
-  const values = [req.body.name || null, req.body.email || null, req.user.id];
-
-  const result = await client.query(text, values);
-  return res.status(200).json({
-    status: "sucess",
-    data: result.rows,
-  });
 };
 
 exports.updatePassword = async (req, res) => {
-  const text = `SELECT * FROM users WHERE id='${req.user.id}'`;
-  const result = await client.query(text);
-  console.log(result.rows[0]);
-  if (!req.user.id) {
-    return res.status(400).json({
+  try {
+    const text = `SELECT * FROM users WHERE id='${req.user.id}'`;
+    const result = await client.query(text);
+
+    if (
+      !(await bcrypt.compare(req.body.currentPassword, result.rows[0].password))
+    ) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Invalid password",
+      });
+    } else {
+      const salt = await bcrypt.genSalt(12);
+      const hash = await bcrypt.hash(req.body.newPassword, salt);
+      const text = `UPDATE users SET password='${hash}' WHERE id=${req.user.id} RETURNING name, email,id`;
+      const updateresult = await client.query(text);
+      return res.status(200).json({
+        status: "success",
+        data: updateresult.rows,
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
       status: "fail",
-      message: "Please log in to change password",
+      message: "An error occurred while updating password",
     });
   }
+};
 
-  if (
-    !(await bcrypt.compare(req.body.currentPassword, result.rows[0].password))
-  ) {
-    return res.status(400).json({
-      status: "fail",
-      message: "Invalid password",
-    });
-  } else {
-    const salt = await bcrypt.genSalt(12);
-    const hash = await bcrypt.hash(req.body.newPassword, salt);
-    const text = `UPDATE users SET password='${hash}' WHERE id=${req.user.id} RETURNING name, email,id`;
-    const updateresult = await client.query(text);
+exports.deleteUser = async (req, res) => {
+  try {
+    const text = `DELETE FROM users WHERE id=${req.user.id} RETURNING *`;
+    const result = await client.query(text);
     return res.status(200).json({
-      status: "sucess",
-      data: updateresult.rows,
+      status: "success",
+      message: "User and associated tasks deleted successfully.",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      status: "fail",
+      message: "An error occurred while deleting the user",
     });
   }
 };
