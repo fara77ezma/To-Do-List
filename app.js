@@ -1,13 +1,11 @@
-const express = require("express");
-const createdb = require("./config/db");
-const app = express();
 const dotenv = require("dotenv");
+dotenv.config({ path: "./config/config.env" });
+const express = require("express");
+const app = express();
 
-const server = app.listen(3000);
+app.listen(3000);
 const tasksRouter = require("./routes/tasks");
 const usersRouter = require("./routes/users");
-
-dotenv.config({ path: "./config/config.env" });
 
 app.use(express.json());
 
