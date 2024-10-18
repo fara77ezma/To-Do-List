@@ -68,7 +68,7 @@ Now it's time to interact with the To-Do List API! 🚀 Below are some steps to 
 
 1. **Explore the API Docs:**
 
-   - Check out our [API Documentation](#https://www.postman.com/crimson-escape-708286/workspace/to-do-list/collection/28990301-0f840a6b-91a1-4d7c-9b8d-619e3fe88a81?action=share&creator=28990301) for a detailed guide on available endpoints and how to use them.
+   - Check out our [API Documentation](https://www.postman.com/crimson-escape-708286/workspace/to-do-list/collection/28990301-0f840a6b-91a1-4d7c-9b8d-619e3fe88a81?action=share&creator=28990301) for a detailed guide on available endpoints and how to use them.
 
 2. **Test Endpoints:**
 
