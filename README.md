@@ -61,15 +61,14 @@ Here’s an overview of the collections in the To-Do List API:
 
 - **Users Collection:** Handles user authentication, including registration, login, and profile management.
 - **Tasks Collection:** Manage tasks, from creating and updating them to deleting and filtering by status, priority, or title.
-- **Authentication Collection:** Secure login, logout, and token management to keep user data safe.
-
+  
 ## Usage
 
 Now it's time to interact with the To-Do List API! 🚀 Below are some steps to get started:
 
 1. **Explore the API Docs:**
 
-   - Check out our [API Documentation](#) for a detailed guide on available endpoints and how to use them.
+   - Check out our [API Documentation](#https://www.postman.com/crimson-escape-708286/workspace/to-do-list/collection/28990301-0f840a6b-91a1-4d7c-9b8d-619e3fe88a81?action=share&creator=28990301) for a detailed guide on available endpoints and how to use them.
 
 2. **Test Endpoints:**
 
@@ -81,4 +80,4 @@ Now it's time to interact with the To-Do List API! 🚀 Below are some steps to 
 
 ---
 
-Happy coding! Let the productivity flow! ✨
+Now go ahead, explore the API, and let the coding journey begin!🌟
