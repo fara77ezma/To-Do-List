@@ -22,7 +22,7 @@ Welcome to the To-Do List API, a simple yet powerful solution for managing your 
 ## Technologies Used:
 
 - 🛠 **Backend:** Node.js & Express.js
-- 📦 **Database:** PostgreSQL 
+- 📦 **Database:** PostgreSQL
 - 🔐 **Authentication:** JWT (JSON Web Tokens)
 
 ## Getting Started:
@@ -43,7 +43,7 @@ git clone https://github.com/fara77ezma/To-Do-List/
 2. Set up the necessary dependencies:
 
 ```
-cd To-do-List
+cd To-Do-List
 npm install
 ```
 
@@ -54,14 +54,14 @@ npm run start
 ```
 
 - The application runs on localhost://3000
-  
+
 ## API Collections
 
 Here’s an overview of the collections in the To-Do List API:
 
 - **Users Collection:** Handles user authentication, including registration, login, and profile management.
 - **Tasks Collection:** Manage tasks, from creating and updating them to deleting and filtering by status, priority, or title.
-  
+
 ## Usage
 
 Now it's time to interact with the To-Do List API! 🚀 Below are some steps to get started:
@@ -76,7 +76,7 @@ Now it's time to interact with the To-Do List API! 🚀 Below are some steps to 
 
 3. **Create Your To-Do List:**
 
-   - Start adding tasks, update their priorities, or mark them as completed to stay on top of your tasks. 
+   - Start adding tasks, update their priorities, or mark them as completed to stay on top of your tasks.
 
 ---
 
