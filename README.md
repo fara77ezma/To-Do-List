@@ -9,6 +9,7 @@ Welcome to the To-Do List API, a simple yet powerful solution for managing your 
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
+- [Testing](#testing)
 - [API Collections](#api-collections)
 - [Usage](#usage)
 
@@ -54,6 +55,19 @@ npm run start
 ```
 
 - The application runs on localhost://3000
+
+## Testing
+
+This project includes both unit and integration tests to ensure the functionality and reliability of the API.
+
+- **Unit Tests**: These tests focus on individual functions and components, verifying that each part of the API works as expected.
+- **Integration Tests**: These tests evaluate how different parts of the application work together, particularly for database interactions and API endpoints.
+
+To run the tests, use the following command:
+
+```
+npm test
+```
 
 ## API Collections
 
