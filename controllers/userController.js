@@ -15,11 +15,7 @@ const createSendToken = (data, statusCode, res) => {
   });
 };
 
-<<<<<<< HEAD
-exports.regitserUser = async (req, res) => {
-=======
 exports.regitserUser = async (req, res, next) => {
->>>>>>> test
   try {
     const data = await client.query(
       `SELECT * FROM users WHERE email='${req.body.email}'`
@@ -37,10 +33,7 @@ exports.regitserUser = async (req, res, next) => {
     const result = await client.query(text);
     createSendToken(result, 200, res);
   } catch (error) {
-<<<<<<< HEAD
-    console.error(error);
-=======
->>>>>>> test
+
     return res.status(500).json({
       status: "fail",
       message: "An error occurred while registering the user",
@@ -48,11 +41,8 @@ exports.regitserUser = async (req, res, next) => {
   }
 };
 
-<<<<<<< HEAD
-exports.login = async (req, res) => {
-=======
+
 exports.login = async (req, res, next) => {
->>>>>>> test
   try {
     const text = `SELECT * FROM users WHERE email='${req.body.email}'`;
     const result = await client.query(text);
@@ -98,11 +88,8 @@ exports.protect = async (req, res, next) => {
     const result = await client.query(text);
 
     if (!result.rows[0]) {
-<<<<<<< HEAD
-      return res.json({
-=======
       return res.status(401).json({
->>>>>>> test
+
         status: "fail",
         message: "The user belonging to this token does no longer exist",
       });
@@ -118,11 +105,8 @@ exports.protect = async (req, res, next) => {
   }
 };
 
-<<<<<<< HEAD
-exports.updateUser = async (req, res) => {
-=======
+
 exports.updateUser = async (req, res, next) => {
->>>>>>> test
   try {
     const text = `
       UPDATE users 
@@ -179,11 +163,8 @@ exports.updatePassword = async (req, res, next) => {
   }
 };
 
-<<<<<<< HEAD
-exports.deleteUser = async (req, res) => {
-=======
+
 exports.deleteUser = async (req, res, next) => {
->>>>>>> test
   try {
     const text = `DELETE FROM users WHERE id=${req.user.id} RETURNING *`;
     const result = await client.query(text);
