@@ -90,14 +90,10 @@ exports.updateTask = async (req, res) => {
 exports.deleteTask = async (req, res) => {
   try {
     const data = await client.query(
-<<<<<<< HEAD
       `SELECT * FROM tasks WHERE id = '${req.params.id}'`
     );
 
-=======
-      `SELECT * FROM tasks WHERE id = ${req.params.id}`
-    );
->>>>>>> test
+
     if (!data.rows[0]) {
       return res.status(404).json({
         status: "fail",
